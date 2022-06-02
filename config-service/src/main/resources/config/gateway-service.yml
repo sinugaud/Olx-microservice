@@ -1,0 +1,57 @@
+server:
+  port: 8060
+
+eureka:
+   instance:
+      prefer-ip-address: true
+   client:
+    serviceUrl:
+      defaultZone: http://localhost:8061/eureka/
+
+logging:
+  pattern: 
+    console: "%d{yyyy-MM-dd HH:mm:ss} ${LOG_LEVEL_PATTERN:-%5p} %m%n"
+              
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+      - id: helloworld-service
+        uri: lb://helloworld-service
+        predicates:
+        - Path=/helloworld/**
+        filters:
+        - RewritePath=/helloworld/(?<path>.*), /$\{path}
+      - id: login-service
+        uri: lb://login-service
+        predicates:
+        - Path=/login/**
+        filters:
+        - RewritePath=/login/(?<path>.*), /$\{path}
+      - id: advertises-service
+        uri: lb://advertises-service
+        predicates:
+        - Path=/advertises/**
+        filters:
+        - RewritePath=/advertises/(?<path>.*), /$\{path}
+      - id: masterdata-service
+        uri: lb://masterdata-service
+        predicates:
+        - Path=/masterdata/**
+        filters:
+        - RewritePath=/masterdata/(?<path>.*), /$\{path}
+      
+springdoc:
+  swagger-ui:
+    urls:
+      - name: helloworld
+        url: /v3/api-docs/helloworld
+      - name: advertises-service
+        url: /v3/api-docs/advertises
+      - name: login-service
+        url: /v3/api-docs/login
+      - name: masterdata-service
+        url: /v3/api-docs/masterdata
